@@ -1,0 +1,33 @@
+# Archivos y carpetas generados por Python y el entorno
+ELSEC/__pycache__/
+ELSEC/*.pyc
+.venv/
+venv/
+env/
+
+# Modelos de MediaPipe (se descargan, no se guardan en el repo)
+ELSEC/mp_models/
+
+# Modelos entrenados (se generan, no se guardan en el repo)
+ELSEC/models/
+
+# Dataset (se genera y puede ser muy grande)
+ELSEC/dataset/
+
+# Archivos y carpetas generados por Flutter
+traductor_senas/.dart_tool/
+traductor_senas/.idea/
+traductor_senas/build/
+traductor_senas/.flutter-plugins
+traductor_senas/.flutter-plugins-dependencies
+traductor_senas/.pub-cache/
+
+# Archivos de IDEs
+.vscode/
+*.iml
+*.hprof
+*.log
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
