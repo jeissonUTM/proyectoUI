@@ -90,6 +90,7 @@ class ExtractorKeypoints:
         self.pose_landmarker = mp.tasks.vision.PoseLandmarker.create_from_options(pose_options)
         self.hand_landmarker = mp.tasks.vision.HandLandmarker.create_from_options(hand_options)
         self._running_mode = running_mode
+        self._last_timestamp_ms = -1
 
     def close(self):
         self.pose_landmarker.close()
@@ -141,6 +142,11 @@ class ExtractorKeypoints:
         """Procesa un frame BGR (formato OpenCV) y devuelve un vector (178,)."""
         frame_rgb = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame_rgb)
+
+        # Asegurar que el timestamp sea estrictamente creciente para MediaPipe
+        if timestamp_ms <= self._last_timestamp_ms:
+            timestamp_ms = self._last_timestamp_ms + 1
+        self._last_timestamp_ms = timestamp_ms
 
         if self._running_mode == VisionRunningMode.VIDEO:
             pose_result = self.pose_landmarker.detect_for_video(mp_image, timestamp_ms)
