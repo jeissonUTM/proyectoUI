@@ -95,6 +95,8 @@ async def manejar_cliente(websocket, interpreter, extractor):
     cooldown = 2.0  # Segundos antes de repetir la misma palabra
     umbral = 0.80   # Confianza mínima para mostrar la predicción
 
+    last_timestamp_ms = 0  # Para asegurar que los timestamps de MediaPipe sean siempre crecientes
+
     try:
         t0 = time.time()
 
@@ -112,9 +114,16 @@ async def manejar_cliente(websocket, interpreter, extractor):
             )
             if frame is None:
                 continue
-            timestamp_ms = int((time.time() - t0) * 1000)
 
-            vec = extractor.process_bgr_frame(frame, timestamp_ms)
+            # Calcular el timestamp actual en milisegundos
+            current_timestamp_ms = int((time.time() - t0) * 1000)
+
+            # Asegurar que el timestamp sea estrictamente creciente para MediaPipe
+            if current_timestamp_ms <= last_timestamp_ms:
+                current_timestamp_ms = last_timestamp_ms + 1
+            last_timestamp_ms = current_timestamp_ms
+
+            vec = extractor.process_bgr_frame(frame, current_timestamp_ms)
 
             porcion_manos = vec[config.POSE_FEATS:]
             mano_detectada = bool(np.any(porcion_manos != 0))
