@@ -5,9 +5,8 @@ ELSEC/*.pyc
 venv/
 env/
 
-
-# Modelos entrenados (se generan, no se guardan en el repo)
-ELSEC/models/
+# Modelos de MediaPipe (se descargan, no se guardan en el repo)
+ELSEC/mp_models/
 
 # Dataset (se genera y puede ser muy grande)
 ELSEC/dataset/
