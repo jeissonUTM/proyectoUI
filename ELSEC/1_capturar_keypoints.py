@@ -76,6 +76,7 @@ class ExtractorKeypoints:
         pose_options = mp.tasks.vision.PoseLandmarkerOptions(
             base_options=BaseOptions(model_asset_path=config.POSE_MODEL_PATH),
             running_mode=running_mode,
+            output_segmentation_masks=False,  # Desactiva el calculator que causa el warning
             num_poses=1,
             min_pose_detection_confidence=0.5,
             min_tracking_confidence=0.5,
@@ -83,6 +84,7 @@ class ExtractorKeypoints:
         hand_options = mp.tasks.vision.HandLandmarkerOptions(
             base_options=BaseOptions(model_asset_path=config.HAND_MODEL_PATH),
             running_mode=running_mode,
+            # No es necesario para hand_landmarker, pero lo dejamos por consistencia
             num_hands=2,
             min_hand_detection_confidence=0.5,
             min_tracking_confidence=0.5,
