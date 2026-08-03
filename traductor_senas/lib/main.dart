@@ -403,7 +403,7 @@ class _TraductorScreenState extends State<TraductorScreen> {
 
   void _enviarFrameAlServidor(CameraImage frame) {
     final ahora = DateTime.now().millisecondsSinceEpoch;
-    if (!_traduciendo || !_isConnected || _enviandoFrame || ahora - _ultimoFrameMs < 250) {
+    if (!_traduciendo || !_isConnected || _enviandoFrame || ahora - _ultimoFrameMs < 100) { // Reducido de 250ms a 100ms
       return;
     }
     _enviandoFrame = true;
@@ -539,19 +539,40 @@ class _CameraPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1.05,
+    // Este contenedor define el área donde se mostrará la cámara.
+    // El FittedBox dentro se encargará de escalar el CameraPreview
+    // para que llene este espacio sin deformarse.
+    return Container(
+      // Forzamos una relación de aspecto 4:3, común en vistas de cámara.
+      // Puedes ajustarlo a 16/9 si prefieres una vista más panorámica.
+      constraints: const BoxConstraints(maxHeight: 480),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.black,
           borderRadius: BorderRadius.circular(20),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
+        child: AspectRatio(
+          aspectRatio: 4 / 3,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
           child: Stack(
             children: [
-              if (activo && controller != null && controller!.value.isInitialized)
-                CameraPreview(controller!),
+              if (activo &&
+                  controller != null &&
+                  controller!.value.isInitialized)
+                // FittedBox es la clave: escala el CameraPreview para que
+                // cubra el área del AspectRatio, recortando lo que sobre.
+                // Esto funciona tanto en vertical como en horizontal.
+                SizedBox.expand(
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    child: SizedBox(
+                      width: controller!.value.previewSize!.height,
+                      height: controller!.value.previewSize!.width,
+                      child: CameraPreview(controller!),
+                    ),
+                  ),
+                ),
               if (!activo || controller == null || !controller!.value.isInitialized)
                 Container(
                   color: Colors.black.withOpacity(0.6),
@@ -633,6 +654,7 @@ class _CameraPreview extends StatelessWidget {
               ),
             ],
           ),
+        ),
         ),
       ),
     );
